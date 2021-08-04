@@ -17,22 +17,42 @@ const renderer = {
 /**
  * Singleton
  */
-let shouldQuit = app.makeSingleInstance(() => {
-  // Someone tried to run a second instance, we should focus our window.
-  window.each(win => {
-    if (win) {
-      if (!win.isVisible()) {
-        win.show()
-      } else {
-        if (win.isMinimized()) win.restore()
-        win.focus()
-      }
+// let shouldQuit = app.makeSingleInstance(() => {
+//   // Someone tried to run a second instance, we should focus our window.
+//   window.each(win => {
+//     if (win) {
+//       if (!win.isVisible()) {
+//         win.show()
+//       } else {
+//         if (win.isMinimized()) win.restore()
+//         win.focus()
+//       }
+//     }
+//   })
+// })
+
+// if (shouldQuit) {
+//   app.quit()
+// }
+let myWindow = null
+
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (myWindow) {
+      if (myWindow.isMinimized()) myWindow.restore()
+      myWindow.focus()
     }
   })
-})
 
-if (shouldQuit) {
-  app.quit()
+  // Create myWindow, load the rest of the app, etc...
+  app.whenReady().then(() => {
+    myWindow = createWindow()
+  })
 }
 
 /**
@@ -153,8 +173,9 @@ function setupWebContentsEvents (page) {
 
   // Inject styles when DOM is ready
   page.on('dom-ready', () => {
-    page.insertCSS(fs.readFileSync(path.join(__dirname, renderer.styles, 'app.css'), 'utf8'))
-    page.insertCSS(fs.readFileSync(path.join(__dirname, renderer.styles, 'theme-dark/main.css'), 'utf8'))
+    console.log(__dirname);
+   // page.insertCSS(fs.readFileSync(path.join(__dirname, renderer.styles, 'app.css'), 'utf8'))
+   // page.insertCSS(fs.readFileSync(path.join(__dirname, renderer.styles, 'theme-dark/main.css'), 'utf8'))
 
     window.close('preload') // Close preload window
     window.get('main').show() // Show main window

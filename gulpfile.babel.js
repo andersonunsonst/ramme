@@ -9,7 +9,7 @@ import babel from 'gulp-babel'
 import del from 'del'
 import autoprefixer from 'gulp-autoprefixer'
 import image from 'gulp-image'
-import sass from 'gulp-sass'
+import sass from 'sass'
 
 // Directories
 const SRC_DIR = 'app/src'
@@ -48,9 +48,9 @@ export function styles () {
   return src(CSS_GLOB, {
     base: SRC_DIR
   })
-    .pipe(sass({
-      outputStyle: 'compressed'
-    }).on('error', sass.logError))
+//     .pipe(sass({
+//       outputStyle: 'compressed'
+//     }).on('error', sass.logError))
     .pipe(autoprefixer())
     .pipe(dest(DIST_DIR))
 }
